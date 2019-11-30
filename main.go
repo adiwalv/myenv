@@ -109,6 +109,26 @@ func connect(gt *Connect, id string, username string, password string) {
 	}
 }
 
+func getAllProfiles(gt *Connect) []string {
+	profileNames := make([]string, len(gt.Profiles))
+	name := ""
+	for _, value := range gt.Profiles {
+		name = gjson.Get(value.Conf, "name").String()
+		profileNames = append(profileNames, name)
+	}
+	return deleteEmptyValues(profileNames)
+}
+
+func deleteEmptyValues(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
+}
+
 func formatSince(t time.Time) string {
 	Day := 24 * time.Hour
 	ts := time.Since(t)
@@ -163,6 +183,9 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
+	profileName := getAllProfiles(&gt)
+	fmt.Println(len(profileName))
+
 	if *l {
 		listConnections(&gt)
 		os.Exit(0)
@@ -178,6 +201,7 @@ func main() {
 	}
 	if *d != "" {
 		disconnect(&gt, *d)
+		fmt.Println("Disconnecting vpn:", *d)
 		listConnections(&gt)
 		os.Exit(0)
 	}
