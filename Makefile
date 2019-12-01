@@ -24,7 +24,7 @@ linux:
 		GOOS=linux GOARCH=$${GOARCH} go build -ldflags=${LDFLAGS} -gcflags=${GCFLAGS} -asmflags=${ASMFLAGS} -o ${TARGET}/gotunl-linux-$${GOARCH}/${BINARY_NAME} ; \
 	done; \
 	sudo cp ${TARGET}/gotunl-linux-$${GOARCH}/${BINARY_NAME} /usr/bin/
-	echo "Done. Copied the binary ${BINARY_NAME} to /usr/bin"
+	echo "Done. Copied the binary ${BINARY_NAME} to /usr/bin. Use ${BINARY_NAME} to run the application!"
 
 darwin:
 	@for GOARCH in ${ARCHS}; do \
