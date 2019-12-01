@@ -4,6 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
+	"os/user"
+	"reflect"
 	"runtime"
 	"sort"
 	"strconv"
@@ -129,6 +132,36 @@ func deleteEmptyValues(s []string) []string {
 	return r
 }
 
+func changeEnvSettings(env string) {
+
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+
+	exec.Command("rm", "/home/"+user.Username+"/.m2/settings.xml").Output()
+	exec.Command("ln", "-s", "/home/"+user.Username+"/.m2/"+env+"-settings.xml", "/home/"+user.Username+"/.m2/settings.xml").Output()
+	exec.Command("rm", "/home/"+user.Username+"/.kube/config").Output()
+	exec.Command("ln", "-s", "/home/"+user.Username+"/.kube/"+env+"-config", "/home/"+user.Username+"/.kube/config").Output()
+}
+
+func typeof(v interface{}) string {
+	return reflect.TypeOf(v).String()
+}
+
+func execute(program string, args ...string) {
+
+	out, err := exec.Command(program, args...).Output()
+
+	if err != nil {
+		fmt.Printf("%s", err)
+	}
+
+	output := string(out[:])
+	fmt.Println(output)
+
+}
+
 func formatSince(t time.Time) string {
 	Day := 24 * time.Hour
 	ts := time.Since(t)
@@ -183,8 +216,8 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	profileName := getAllProfiles(&gt)
-	fmt.Println(len(profileName))
+	profileNames := getAllProfiles(&gt)
+	fmt.Println("List of VPNS:", profileNames)
 
 	if *l {
 		listConnections(&gt)
@@ -196,6 +229,7 @@ func main() {
 		password := argsWithProg[4]
 		fmt.Println("Connecting to vpn:", *c)
 		connect(&gt, *c, username, password)
+		changeEnvSettings(*c)
 		listConnections(&gt)
 		os.Exit(0)
 	}
