@@ -166,8 +166,7 @@ func changeEnvSettings(env string) {
 
 	exec.Command("rm", "/home/"+user.Username+"/.m2/settings.xml").Output()
 	exec.Command("ln", "-s", "/home/"+user.Username+"/.m2/"+env+"-settings.xml", "/home/"+user.Username+"/.m2/settings.xml").Output()
-	exec.Command("rm", "/home/"+user.Username+"/.kube/config").Output()
-	exec.Command("ln", "-s", "/home/"+user.Username+"/.kube/"+env+"-config", "/home/"+user.Username+"/.kube/config").Output()
+
 }
 
 func typeof(v interface{}) string {
